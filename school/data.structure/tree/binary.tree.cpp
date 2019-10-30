@@ -7,7 +7,7 @@
 
 #include <bits/stdc++.h>
 #define ll  long long
-#define Ok 1
+#define OK 1
 #define ERROR 0
 #define FALSE 0
 #define TRUE 1
@@ -28,7 +28,7 @@ typedef struct BiTnode
 int N;
 /* --------------------------------------------------------------------------------------------------*/
 //"必做"
-Status CreateBiTree(BiTree &T);//先序输入构造一个二叉树（注意空树）
+void CreateBiTree(BiTree &T,string str);//先序输入构造一个二叉树（注意空树）
 //Visit是对节点操作的应用函数（例如输出节点信息）
 Status PrintElement(TElemType e);
 Status PreOrderTraverse(BiTree T,Status (*Visit)(TElemType e));//先序遍历二叉树
@@ -45,7 +45,7 @@ Status DeletLeftChild(TElemType,BiTree T);//删除节点e的左子树
 Status LevelOrderTraverse(BiTree T,Status (*Visit)(TElemType e));//层次遍历二叉树
 
 //简单操作函数
-void myprintmenu()
+void myprintmenu(BiTree T)
 {
     int n;
     cout << "input 1 to run BiTreeDepth" << endl; 
@@ -72,7 +72,9 @@ void myprintmenu()
         case 3:
            // DeletLeftChild();
         case 4:
-           // PreOrderTraverse();
+            PreOrderTraverse(T,PrintElement);
+            cout << endl;
+            break;
         case 5:
            // InOrderTraverse();
         case 6:
@@ -89,10 +91,32 @@ void myprintmenu()
             break;
     }
 }
-Status CreateBiTree(BiTree &T)
+void CreateBiTree(BiTree &T,string str)
 {
-    if()
-    return 0;
+    if(str[N++] == '^') T = NULL;
+    else
+    {
+        T = (BitNode *) malloc(sizeof(BitNode));
+        T -> data = str[N++];
+        CreateBiTree(T -> lchild,str);
+        CreateBiTree(T -> rchild,str);
+    }
+}
+//abd^^^ceg^^h^^f^i^^
+Status PrintElement(TElemType e)
+{
+    cout << e << " ";
+    return OK;
+}
+Status PreOrderTraverse(BiTree T,Status (*Visit)(TElemType e))//先序遍历二叉树
+{
+    if(T)
+    {
+        Visit(T->data);
+        PreOrderTraverse(T->lchild,Visit);
+        PreOrderTraverse(T->rchild,Visit);
+    }
+    return OK;
 }
 int main()
 {
@@ -102,7 +126,8 @@ int main()
     string tree;
     cin >> tree;
     N = 0;
-    CreateBiTree();
+    BiTree mytree;
+    CreateBiTree(mytree,tree);
     while(1)
     {
         cout << "please input 0 printf menu,input -1 exit " <<endl;
@@ -110,7 +135,7 @@ int main()
         cin >> x;
         if(x == -1) 
             break;
-        else myprintmenu();
+        else myprintmenu(mytree);
     }
     return 0;
 }
