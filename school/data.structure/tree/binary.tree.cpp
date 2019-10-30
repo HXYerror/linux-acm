@@ -28,37 +28,47 @@ typedef struct BiTnode
 int N;
 /* --------------------------------------------------------------------------------------------------*/
 //"必做"
-void CreateBiTree(BiTree &T,string str);//先序输入构造一个二叉树（注意空树）
+bool  CreateBiTree(BiTree &T,string str);//先序输入构造一个二叉树（注意空树）1
 //Visit是对节点操作的应用函数（例如输出节点信息）
-Status PrintElement(TElemType e);
-Status PreOrderTraverse(BiTree T,Status (*Visit)(TElemType e));//先序遍历二叉树
-Status InOrderTraverse(BiTree T,Status (*Visit)(TElemType e));//中序遍历二叉树
-Status PostOrderTraverse(BiTree T,Status (*Visit)(TElemType e));//后序遍历二叉树
+Status PrintElement(TElemType e);//输出节点信息  1
+Status PreOrderTraverse(BiTree T,Status (*Visit)(TElemType e));//先序遍历二叉树1
+Status InOrderTraverse(BiTree T,Status (*Visit)(TElemType e));//中序遍历二叉树1
+Status PostOrderTraverse(BiTree T,Status (*Visit)(TElemType e));//后序遍历二叉树1
 //非递归的方法遍历二叉树（借助栈的操作）"三选一"
 Status PreOrderTraverseStack(BiTree T,Status (*Visit)(TElemType e));//先序遍历二叉树
 Status InOrderTraverseStack(BiTree T,Status (*Visit)(TElemType e));//先序遍历二叉树
 Status PostOrderTraverseStack(BiTree T,Status (*Visit)(TElemType e));//先序遍历二叉树
 //"选做"
-Status BiTreeDepth(BiTree T);//求二叉树的高度
-Status BiTreeLeaf(BiTree T);//求二叉树的叶子数
-Status DeletLeftChild(TElemType,BiTree T);//删除节点e的左子树
+int BiTreeDepth(BiTree T);//求二叉树的高度1
+int BiTreeLeaf(BiTree T);//求二叉树的叶子数1
+Status DeletLeftChild(TElemType,BiTree T);//删除节点e的左子树1
 Status LevelOrderTraverse(BiTree T,Status (*Visit)(TElemType e));//层次遍历二叉树
 
 //简单操作函数
+void myprintmenu(BiTree T);//输出菜单选择执行的函数1
+Status FindElement(BiTree T,TElemType f,BiTree p);//寻找指定的节点e并储存到p中1
+
+
+//函数编写
 void myprintmenu(BiTree T)
 {
     int n;
-    cout << "input 1 to run BiTreeDepth" << endl; 
-    cout << "input 2 to run BiTreeLeaf" << endl; 
-    cout << "input 3 to run DeletLeftChild" << endl; 
-    cout << "input 4 to run PreOrderTraverse" << endl; 
-    cout << "input 5 to run InOrderTraverse" << endl; 
-    cout << "input 6 to run PostOrderTraverse" << endl; 
-    cout << "input 7 to run PreOrderTraverseStack" << endl; 
-    cout << "input 8 to run InOrderTraverseStack" << endl; 
-    cout << "input 9 to run PostOrderTraverseStack" << endl; 
-    cout << "input 10 to run LevelOrderTraverse" << endl; 
-    cout << "please input n:", cin >> n;
+    cout << "if need menu input 1 ,else intput 0: ";
+    cin >> n;
+    if(n)
+    {
+        cout << "input 1 to run BiTreeDepth" << endl; 
+        cout << "input 2 to run BiTreeLeaf" << endl; 
+        cout << "input 3 to run DeletLeftChild" << endl; 
+        cout << "input 4 to run PreOrderTraverse" << endl; 
+        cout << "input 5 to run InOrderTraverse" << endl; 
+        cout << "input 6 to run PostOrderTraverse" << endl; 
+        cout << "input 7 to run PreOrderTraverseStack" << endl; 
+        cout << "input 8 to run InOrderTraverseStack" << endl; 
+        cout << "input 9 to run PostOrderTraverseStack" << endl; 
+        cout << "input 10 to run LevelOrderTraverse" << endl;
+    }
+    cout << "please input your choice:", cin >> n;
     if(n > 10 || n < 1)
     {
         cout << "error! Please try again" << endl;
@@ -66,19 +76,28 @@ void myprintmenu(BiTree T)
     switch(n)
     {
         case 1:
-           // BiTreeDepth();
+            BiTreeDepth(T);
         case 2:
-           // BiTreeLeaf();
+            BiTreeLeaf(T);
         case 3:
-           // DeletLeftChild();
+            TElemType e;
+            cout << "please input the value of node e:";
+            cin >> e;
+            if(DeletLeftChild(e,T)) cout << "delet OK" <<endl;
+            else cout << "delet ERROR" <<endl;
+            break;
         case 4:
             PreOrderTraverse(T,PrintElement);
             cout << endl;
             break;
         case 5:
-           // InOrderTraverse();
+            InOrderTraverse(T,PrintElement);
+            cout <<endl;
+            break;
         case 6:
-           // PostOrderTraverse();
+            PostOrderTraverse(T,PrintElement);
+            cout << endl;
+            break;
         case 7:
            // PreOrderTraverseStack();
         case 8:
@@ -91,15 +110,22 @@ void myprintmenu(BiTree T)
             break;
     }
 }
-void CreateBiTree(BiTree &T,string str)
+bool CreateBiTree(BiTree &T,string str)
 {
-    if(str[N++] == '^') T = NULL;
+    if(N == (int) str.size()) return ERROR;
+    if(str[N] == '^')
+    {
+        N++;
+        T = NULL;
+        return OK;
+    }
     else
     {
         T = (BitNode *) malloc(sizeof(BitNode));
         T -> data = str[N++];
-        CreateBiTree(T -> lchild,str);
-        CreateBiTree(T -> rchild,str);
+        if(CreateBiTree(T -> lchild,str)) 
+            if(CreateBiTree(T -> rchild,str)) return OK;
+        return ERROR;
     }
 }
 //abd^^^ceg^^h^^f^i^^
@@ -112,25 +138,101 @@ Status PreOrderTraverse(BiTree T,Status (*Visit)(TElemType e))//先序遍历二�
 {
     if(T)
     {
-        Visit(T->data);
-        PreOrderTraverse(T->lchild,Visit);
-        PreOrderTraverse(T->rchild,Visit);
+        if(Visit(T->data))
+            if(PreOrderTraverse(T->lchild,Visit))
+                if(PreOrderTraverse(T->rchild,Visit)) return OK;
+        return ERROR;
     }
+    else  return OK;
+}
+Status InOrderTraverse(BiTree T,Status (*Visit)(TElemType e))//中序遍历二叉树
+{
+    if(T)
+    {
+        if(InOrderTraverse(T->lchild,Visit))
+            if(Visit(T->data))
+                if(InOrderTraverse(T->rchild,Visit)) return OK;
+        return ERROR;
+    }
+    else  return OK;
+}
+Status PostOrderTraverse(BiTree T,Status (*Visit)(TElemType e))//后序遍历二叉树
+{
+    if(T)
+    {
+        if(PostOrderTraverse(T->lchild,Visit))
+            if(PostOrderTraverse(T->rchild,Visit))
+                if(Visit(T->data)) return OK;
+        return ERROR;
+    }
+    else  return OK;
+}
+Status FindElement(BiTree T,TElemType f,BiTree p)
+{
+    if(T)
+    {
+        if(f == T->data)
+        {
+            p = T;
+            return OK;
+        }
+        if(FindElement(T->lchild,f,p))
+            if(FindElement(T->rchild,f,p)) return OK;
+        return ERROR;
+    }
+    else  return OK;
+}
+Status DeletLeftChild(TElemType e,BiTree T)//删除节点e的左子树
+{
+    if(T == NULL) return ERROR;
+    BiTree P = NULL;
+    FindElement(T,e,P);
+    if(P== NULL) return ERROR;
+    P -> lchild = NULL;
     return OK;
+}
+int BiTreeLeaf(BiTree T)//求二叉树的叶子数
+{
+    if(T == NULL) return ERROR;
+    if(!T->lchild && !T->rchild) return OK;
+    else
+    {
+        int cntleaf = 0;
+        cntleaf += BiTreeLeaf(T);
+        cntleaf += BiTreeLeaf(T);
+        return cntleaf;
+    }
+}
+
+int BiTreeDepth(BiTree T)//求二叉树的高度error
+{
+    if(T == NULL) return ERROR;
+    else
+    {
+        int ldepth = BiTreeDepth(T->lchild);
+        int rdepth = BiTreeDepth(T->rchild);
+        return max(ldepth,rdepth) + 1;
+    }
 }
 int main()
 {
     std::ios::sync_with_stdio(false);
 /* --------------------------------------------------------------------------------------------------*/
-    cout << "Please input a binarytree,use '^' replace viod tree" <<endl;
+    cout << "Please input a binarytree-char,use '^' replace viod tree" <<endl;
     string tree;
     cin >> tree;
     N = 0;
     BiTree mytree;
-    CreateBiTree(mytree,tree);
+    while(!CreateBiTree(mytree,tree))
+    {
+        cout << "input ERROR,please input binarytree-char again: ";
+        cin >> tree;
+        free(mytree);
+        N = 0;
+    }
     while(1)
     {
-        cout << "please input 0 printf menu,input -1 exit " <<endl;
+        cout << "please input 0 continue,input -1 exit " <<endl;
         int x;
         cin >> x;
         if(x == -1) 
