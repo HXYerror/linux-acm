@@ -1,7 +1,7 @@
 /*************************************************************************
 	> File Name: binary.tree.cpp
 	> Author: HXYerror
-	> Mail: zx841985525@163.com 
+	> Mail: zx841985525@163.com
 	> Created Time: 2019年10月29日 星期二 20时43分55秒
  ************************************************************************/
 
@@ -19,34 +19,87 @@ const int MOD = 998244353;//998244353;
 
 /* --------------------------------------------------------------------------------------------------*/
 typedef char TElemType;
-typedef char Status;
+typedef char TStatus;
 typedef struct BiTnode
 {
     TElemType data;
     struct BiTnode *lchild,*rchild;
 }BitNode,*BiTree;
-int N;
+int N;//记录读取的节点位置
+struct mystack
+{
+    typedef  char  ElemType;
+    typedef  char  Status;
+    typedef struct
+    {
+        ElemType *base;
+        ElemType  *top;
+        int  stackSize;
+    } SqStack;
+
+    #define STACK_INIT_SIZE 10 // 存储空间的初始分配量
+    #define STACKINCREMENT 5// 存储空间的分配增量
+    //初始化栈
+    Status InitStack(SqStack &S)
+    {
+        S.base = (ElemType *)malloc(STACK_INIT_SIZE * sizeof(ElemType));
+        if(!S.base) exit (_OVERFLOW);
+            S.top = S.base;
+        S.stackSize = STACK_INIT_SIZE;
+        return OK;
+    }
+
+    // 判栈 S 是否为空栈
+    Status StackEmpty(SqStack S)
+    {
+        if (S.top==S.base) return  TRUE;
+        else return  FALSE;
+    }
+
+    //入栈函数
+    Status Push (SqStack &S, ElemType e)
+    {
+        if(S.top - S.base >= S.stackSize)
+        {
+            S.base = (ElemType *)realloc(S.base,(S.stackSize + STACKINCREMENT) * sizeof(ElemType));
+            if(!S.base) exit(_OVERFLOW);
+            S.top = S.base + S.stackSize;
+            S.stackSize += STACKINCREMENT;
+        }
+        *S.top++ = e;
+        return OK;
+    }
+
+    //出栈函数
+    Status Pop (SqStack &S, ElemType &e)
+    {
+        if(S.top == S.base) return ERROR;
+        e = * --S.top;
+        return OK;
+    }
+};
+
 /* --------------------------------------------------------------------------------------------------*/
 //"必做"
 bool  CreateBiTree(BiTree &T,string str);//先序输入构造一个二叉树（注意空树）1
 //Visit是对节点操作的应用函数（例如输出节点信息）
-Status PrintElement(TElemType e);//输出节点信息  1
-Status PreOrderTraverse(BiTree T,Status (*Visit)(TElemType e));//先序遍历二叉树1
-Status InOrderTraverse(BiTree T,Status (*Visit)(TElemType e));//中序遍历二叉树1
-Status PostOrderTraverse(BiTree T,Status (*Visit)(TElemType e));//后序遍历二叉树1
+TStatus PrintElement(TElemType e);//输出节点信息  1
+TStatus PreOrderTraverse(BiTree T,TStatus (*Visit)(TElemType e));//先序遍历二叉树1
+TStatus InOrderTraverse(BiTree T,TStatus (*Visit)(TElemType e));//中序遍历二叉树1
+TStatus PostOrderTraverse(BiTree T,TStatus (*Visit)(TElemType e));//后序遍历二叉树1
 //非递归的方法遍历二叉树（借助栈的操作）"三选一"
-Status PreOrderTraverseStack(BiTree T,Status (*Visit)(TElemType e));//先序遍历二叉树
-Status InOrderTraverseStack(BiTree T,Status (*Visit)(TElemType e));//先序遍历二叉树
-Status PostOrderTraverseStack(BiTree T,Status (*Visit)(TElemType e));//先序遍历二叉树
+TStatus PreOrderTraverseStack(BiTree T,TStatus (*Visit)(TElemType e));//先序遍历二叉树
+TStatus InOrderTraverseStack(BiTree T,TStatus (*Visit)(TElemType e));//先序遍历二叉树
+TStatus PostOrderTraverseStack(BiTree T,TStatus (*Visit)(TElemType e));//先序遍历二叉树
 //"选做"
 int BiTreeDepth(BiTree T);//求二叉树的高度1
 int BiTreeLeaf(BiTree T);//求二叉树的叶子数1
-Status DeletLeftChild(TElemType,BiTree T);//删除节点e的左子树1
-Status LevelOrderTraverse(BiTree T,Status (*Visit)(TElemType e));//层次遍历二叉树
+TStatus DeletLeftChild(TElemType,BiTree T);//删除节点e的左子树1
+TStatus LevelOrderTraverse(BiTree T,TStatus (*Visit)(TElemType e));//层次遍历二叉树
 
 //简单操作函数
 void myprintmenu(BiTree T);//输出菜单选择执行的函数1
-Status FindElement(BiTree T,TElemType f,BiTree p);//寻找指定的节点e并储存到p中1
+TStatus FindElement(BiTree T,TElemType f,BiTree p);//寻找指定的节点e并储存到p中1
 
 
 //函数编写
@@ -57,15 +110,15 @@ void myprintmenu(BiTree T)
     cin >> n;
     if(n)
     {
-        cout << "input 1 to run BiTreeDepth" << endl; 
-        cout << "input 2 to run BiTreeLeaf" << endl; 
-        cout << "input 3 to run DeletLeftChild" << endl; 
-        cout << "input 4 to run PreOrderTraverse" << endl; 
-        cout << "input 5 to run InOrderTraverse" << endl; 
-        cout << "input 6 to run PostOrderTraverse" << endl; 
-        cout << "input 7 to run PreOrderTraverseStack" << endl; 
-        cout << "input 8 to run InOrderTraverseStack" << endl; 
-        cout << "input 9 to run PostOrderTraverseStack" << endl; 
+        cout << "input 1 to run BiTreeDepth" << endl;
+        cout << "input 2 to run BiTreeLeaf" << endl;
+        cout << "input 3 to run DeletLeftChild" << endl;
+        cout << "input 4 to run PreOrderTraverse" << endl;
+        cout << "input 5 to run InOrderTraverse" << endl;
+        cout << "input 6 to run PostOrderTraverse" << endl;
+        cout << "input 7 to run PreOrderTraverseStack" << endl;
+        cout << "input 8 to run InOrderTraverseStack" << endl;
+        cout << "input 9 to run PostOrderTraverseStack" << endl;
         cout << "input 10 to run LevelOrderTraverse" << endl;
     }
     cout << "please input your choice:", cin >> n;
@@ -123,18 +176,18 @@ bool CreateBiTree(BiTree &T,string str)
     {
         T = (BitNode *) malloc(sizeof(BitNode));
         T -> data = str[N++];
-        if(CreateBiTree(T -> lchild,str)) 
+        if(CreateBiTree(T -> lchild,str))
             if(CreateBiTree(T -> rchild,str)) return OK;
         return ERROR;
     }
 }
 //abd^^^ceg^^h^^f^i^^
-Status PrintElement(TElemType e)
+TStatus PrintElement(TElemType e)
 {
     cout << e << " ";
     return OK;
 }
-Status PreOrderTraverse(BiTree T,Status (*Visit)(TElemType e))//先序遍历二叉树
+TStatus PreOrderTraverse(BiTree T,TStatus (*Visit)(TElemType e))//先序遍历二叉树
 {
     if(T)
     {
@@ -145,7 +198,7 @@ Status PreOrderTraverse(BiTree T,Status (*Visit)(TElemType e))//先序遍历二�
     }
     else  return OK;
 }
-Status InOrderTraverse(BiTree T,Status (*Visit)(TElemType e))//中序遍历二叉树
+TStatus InOrderTraverse(BiTree T,TStatus (*Visit)(TElemType e))//中序遍历二叉树
 {
     if(T)
     {
@@ -156,7 +209,7 @@ Status InOrderTraverse(BiTree T,Status (*Visit)(TElemType e))//中序遍历二�
     }
     else  return OK;
 }
-Status PostOrderTraverse(BiTree T,Status (*Visit)(TElemType e))//后序遍历二叉树
+TStatus PostOrderTraverse(BiTree T,TStatus (*Visit)(TElemType e))//后序遍历二叉树
 {
     if(T)
     {
@@ -167,7 +220,7 @@ Status PostOrderTraverse(BiTree T,Status (*Visit)(TElemType e))//后序遍历二
     }
     else  return OK;
 }
-Status FindElement(BiTree T,TElemType f,BiTree p)
+TStatus FindElement(BiTree T,TElemType f,BiTree p)
 {
     if(T)
     {
@@ -182,7 +235,7 @@ Status FindElement(BiTree T,TElemType f,BiTree p)
     }
     else  return OK;
 }
-Status DeletLeftChild(TElemType e,BiTree T)//删除节点e的左子树
+TStatus DeletLeftChild(TElemType e,BiTree T)//删除节点e的左子树
 {
     if(T == NULL) return ERROR;
     BiTree P = NULL;
@@ -235,7 +288,7 @@ int main()
         cout << "please input 0 continue,input -1 exit " <<endl;
         int x;
         cin >> x;
-        if(x == -1) 
+        if(x == -1)
             break;
         else myprintmenu(mytree);
     }
