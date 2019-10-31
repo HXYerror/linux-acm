@@ -79,6 +79,70 @@ struct mystack
     }
 };
 
+struct myqueue
+{
+
+    const int  MAXSIZE = 11 //初始容量
+
+    typedef int QStatus;
+    typedef int QElemType;//定义数据类型
+
+    //循环队列的顺序存储结构
+    typedef struct{
+        QElemType data;
+        int front; //头指针
+        int rear;//尾指针，队列非空时，指向队尾元素的下一个位置
+    }SqQueue;
+
+    //初始化空队列
+    QStatus InitQueue(SqQueue *sQ){
+        sQ->front =0;
+        sQ->rear =0;
+        return OK;
+    }
+
+    //将队列清空
+    QStatus ClearQueue(SqQueue *Q){
+        Q->front = Q->rear =0;
+        return OK;
+    }
+
+    //判断队列是否为null
+    QStatus QueueEmpty(SqQueue Q){
+        if(Q.front == Q.rear)
+            return TRUE;
+        else
+            return FALSE;
+    }
+
+    //返回队头元素
+    QStatus GetHead(SqQueue Q, QElemType *e){
+        if(Q.front == Q.rear)//是否为空队列
+            return ERROR;
+        *e = Q.data[Q.front];
+        return OK;
+    }
+
+    //在队尾插入元素
+    QStatus EnQueue(SqQueue *Q, QElemType e){
+        if((Q->rear+1)%MAXSIZE == Q->front)//队列已满
+            return ERROR;
+
+        Q->data[Q->rear] =e;//插入队尾
+        Q->rear = (Q->rear +1)%MAXSIZE;//尾部指针后移，如果到最后则转到头部
+        return OK;
+    }
+
+    //元素出队
+    QStatus DeQueue(SqQueue *Q, QElemType *e){
+        if(Q->front == Q->rear)//队列空
+            return ERROR;
+        *e = Q->data[Q->front];//返回队头元素
+        Q->front = (Q->front+1)%MAXSIZE;//队头指针后移，如到最后转到头部
+        return OK;
+    }
+};
+
 /* --------------------------------------------------------------------------------------------------*/
 //"必做"
 bool  CreateBiTree(BiTree &T,string str);//先序输入构造一个二叉树（注意空树）1
