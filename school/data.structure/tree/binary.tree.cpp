@@ -11,12 +11,12 @@
 #define ERROR 0
 #define FALSE 0
 #define TRUE 1
-#define OVERFLOW -2
+#define _OVERFLOW -2
 using namespace std;
 const int MAX = 100010;
 const int INF = 0x3f3f3f3f;
 const int MOD = 998244353;//998244353;
-
+const int MAXSIZE = 1000;
 /* --------------------------------------------------------------------------------------------------*/
 typedef char TElemType;
 typedef char TStatus;
@@ -28,15 +28,15 @@ typedef struct BiTnode
 int N;//记录读取的节点位置
 struct mystack
 {
-    typedef  char  ElemType;
-    typedef  char  Status;
+    typedef  BiTree  ElemType;
+    typedef  int  Status;
     typedef struct
     {
         ElemType *base;
         ElemType  *top;
         int  stackSize;
     } SqStack;
-
+    SqStack Stack;
     #define STACK_INIT_SIZE 10 // 存储空间的初始分配量
     #define STACKINCREMENT 5// 存储空间的分配增量
     //初始化栈
@@ -77,23 +77,20 @@ struct mystack
         e = * --S.top;
         return OK;
     }
-};
+}S;
 
 struct myqueue
 {
-
-    const int  MAXSIZE = 11 //初始容量
-
-    typedef int QStatus;
-    typedef int QElemType;//定义数据类型
+    typedef int  QStatus;
+    typedef BitNode QElemType;//定义数据类型
 
     //循环队列的顺序存储结构
     typedef struct{
-        QElemType data;
+        QElemType data[MAXSIZE] ;
         int front; //头指针
         int rear;//尾指针，队列非空时，指向队尾元素的下一个位置
     }SqQueue;
-
+    SqQueue Queue;
     //初始化空队列
     QStatus InitQueue(SqQueue *sQ){
         sQ->front =0;
@@ -138,7 +135,7 @@ struct myqueue
         if(Q->front == Q->rear)//队列空
             return ERROR;
         *e = Q->data[Q->front];//返回队头元素
-        Q->front = (Q->front+1)%MAXSIZE;//队头指针后移，如到最后转到头部
+        Q->front = (Q->front+1)%MAXSIZE;//队头指针后移，如到最后转到头
         return OK;
     }
 };
@@ -218,7 +215,7 @@ void myprintmenu(BiTree T)
         case 7:
            // PreOrderTraverseStack();
         case 8:
-           // InOrderTraverseStack();
+            InOrderTraverseStack(T,PrintElement);
         case 9:
            // PostOrderTraverseStack();
         case 10:
@@ -330,6 +327,27 @@ int BiTreeDepth(BiTree T)//求二叉树的高度error
         int rdepth = BiTreeDepth(T->rchild);
         return max(ldepth,rdepth) + 1;
     }
+}
+TStatus InOrderTraverseStack(BiTree T,TStatus (*Visit)(TElemType e))//先序遍历二叉树
+{
+    BiTree p;
+    p = T;
+    S.InitStack(S.Stack);
+    do
+    {
+        if(p!=NULL)
+        {
+            S.Push(S.Stack,p);
+            p = p->lchild;
+        }
+        else
+        {
+            S.Pop(S.Stack,p);
+            Visit(p->data);
+            p = p->rchild;
+        }
+    }while(!(p==NULL)&& S.StackEmpty(S.Stack));
+    return OK;
 }
 int main()
 {
