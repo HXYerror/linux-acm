@@ -52,7 +52,7 @@ struct mystack
     // 判栈 S 是否为空栈
     Status StackEmpty(SqStack S)
     {
-        if (S.top==S.base) return  TRUE;
+        if (S.top == S.base) return  TRUE;
         else return  FALSE;
     }
 
@@ -160,7 +160,7 @@ TStatus LevelOrderTraverse(BiTree T,TStatus (*Visit)(TElemType e));//层次遍�
 
 //简单操作函数
 void myprintmenu(BiTree T);//输出菜单选择执行的函数1
-TStatus FindElement(BiTree T,TElemType f,BiTree p);//寻找指定的节点e并储存到p中1
+TStatus FindElement(BiTree T,TElemType f,BiTree &p);//寻找指定的节点e并储存到p中1
 
 
 //函数编写
@@ -190,9 +190,11 @@ void myprintmenu(BiTree T)
     switch(n)
     {
         case 1:
-            BiTreeDepth(T);
+            cout << BiTreeDepth(T) << endl;
+            break;
         case 2:
-            BiTreeLeaf(T);
+            cout << BiTreeLeaf(T) <<endl;
+            break;
         case 3:
             TElemType e;
             cout << "please input the value of node e:";
@@ -216,6 +218,8 @@ void myprintmenu(BiTree T)
            // PreOrderTraverseStack();
         case 8:
             InOrderTraverseStack(T,PrintElement);
+            cout << "\n";
+            break;
         case 9:
            // PostOrderTraverseStack();
         case 10:
@@ -281,7 +285,7 @@ TStatus PostOrderTraverse(BiTree T,TStatus (*Visit)(TElemType e))//后序遍历�
     }
     else  return OK;
 }
-TStatus FindElement(BiTree T,TElemType f,BiTree p)
+TStatus FindElement(BiTree T,TElemType f,BiTree &p)
 {
     if(T)
     {
@@ -308,17 +312,17 @@ TStatus DeletLeftChild(TElemType e,BiTree T)//删除节点e的左子树
 int BiTreeLeaf(BiTree T)//求二叉树的叶子数
 {
     if(T == NULL) return ERROR;
-    if(!T->lchild && !T->rchild) return OK;
+    if(!(T->lchild) && !(T->rchild)) return OK;
     else
     {
         int cntleaf = 0;
-        cntleaf += BiTreeLeaf(T);
-        cntleaf += BiTreeLeaf(T);
+        cntleaf += BiTreeLeaf(T->lchild);
+        cntleaf += BiTreeLeaf(T->rchild);
         return cntleaf;
     }
 }
 
-int BiTreeDepth(BiTree T)//求二叉树的高度error
+int BiTreeDepth(BiTree T)//求二叉树的高度
 {
     if(T == NULL) return ERROR;
     else
@@ -335,7 +339,7 @@ TStatus InOrderTraverseStack(BiTree T,TStatus (*Visit)(TElemType e))//先序遍�
     S.InitStack(S.Stack);
     do
     {
-        if(p!=NULL)
+        if(p != NULL)
         {
             S.Push(S.Stack,p);
             p = p->lchild;
@@ -346,7 +350,7 @@ TStatus InOrderTraverseStack(BiTree T,TStatus (*Visit)(TElemType e))//先序遍�
             Visit(p->data);
             p = p->rchild;
         }
-    }while(!(p==NULL)&& S.StackEmpty(S.Stack));
+    }while(!S.StackEmpty(S.Stack));??
     return OK;
 }
 int main()
