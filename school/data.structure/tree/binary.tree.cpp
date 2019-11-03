@@ -82,7 +82,7 @@ struct mystack
 struct myqueue
 {
     typedef int  QStatus;
-    typedef BitNode QElemType;//定义数据类型
+    typedef BiTree QElemType;//定义数据类型
 
     //循环队列的顺序存储结构
     typedef struct{
@@ -113,15 +113,15 @@ struct myqueue
     }
 
     //返回队头元素
-    QStatus GetHead(SqQueue Q, QElemType *e){
+    QStatus GetHead(SqQueue Q, QElemType &e){
         if(Q.front == Q.rear)//是否为空队列
             return ERROR;
-        *e = Q.data[Q.front];
+        e = Q.data[Q.front];
         return OK;
     }
 
     //在队尾插入元素
-    QStatus EnQueue(SqQueue *Q, QElemType e){
+    QStatus QueuePush(SqQueue *Q, QElemType e){
         if((Q->rear+1)%MAXSIZE == Q->front)//队列已满
             return ERROR;
 
@@ -131,14 +131,14 @@ struct myqueue
     }
 
     //元素出队
-    QStatus DeQueue(SqQueue *Q, QElemType *e){
+    QStatus QueuePop(SqQueue *Q, QElemType &e){
         if(Q->front == Q->rear)//队列空
             return ERROR;
-        *e = Q->data[Q->front];//返回队头元素
+        e = Q->data[Q->front];//返回队头元素
         Q->front = (Q->front+1)%MAXSIZE;//队头指针后移，如到最后转到头
         return OK;
     }
-};
+}Q;
 
 /* --------------------------------------------------------------------------------------------------*/
 //"必做"
@@ -159,7 +159,7 @@ TStatus DeletLeftChild(TElemType,BiTree T);//删除节点e的左子树1
 TStatus LevelOrderTraverse(BiTree T,TStatus (*Visit)(TElemType e));//层次遍历二叉树
 
 //简单操作函数
-void myprintmenu(BiTree T);//输出菜单选择执行的函数1
+int myprintmenu(BiTree T);//输出菜单选择执行的函数1
 TStatus FindElement(BiTree T,TElemType f,BiTree &p);//寻找指定的节点e并储存到p中1
 
 
@@ -167,9 +167,9 @@ TStatus FindElement(BiTree T,TElemType f,BiTree &p);//寻找指定的节点e并�
 int myprintmenu(BiTree T)
 {
     int n;
-    cout << "if need menu input 1 ,else intput 0 or input -1 to exit:";
+    cout << "if need menu input 1 ,else intput 0 continue or input -1 to exit:";
     cin >> n;
-    if(n)
+    if(n == 1)
     {
         cout << "input 1 to run BiTreeDepth" << endl;
         cout << "input 2 to run BiTreeLeaf" << endl;
@@ -198,7 +198,7 @@ int myprintmenu(BiTree T)
             break;
         case 3:
             TElemType e;
-            cout << "please input the value of node e:";
+            cout << "please input the value of node e(the node is the father that you want to delet):";
             cin >> e;
             if(DeletLeftChild(e,T)) cout << "delet OK" <<endl;
             else cout << "delet ERROR" <<endl;
@@ -211,7 +211,7 @@ int myprintmenu(BiTree T)
             InOrderTraverse(T,PrintElement);
             cout <<endl;
             break;
-        case 6:
+            case 6:
             PostOrderTraverse(T,PrintElement);
             cout << endl;
             break;
@@ -228,7 +228,7 @@ int myprintmenu(BiTree T)
             cout << "\n";
             break;
         case 10:
-           // LevelOrderTraverse();
+            LevelOrderTraverse(T,PrintElement);
             cout << "\n";
             break;
         default:
@@ -389,29 +389,53 @@ TStatus PostOrderTraverseStack(BiTree T,TStatus (*Visit)(TElemType e))//后序�
 {
 
     BiTree p;
+    BiTree last;
     p = T;
+    last = p;
     S.InitStack(S.Stack);
     do
     {
         if(p != NULL)
         {
+            if(p -> rchild == last)
+            {
+                Visit(p->data);
+                last = p;
+                if(!S.StackEmpty(S.Stack)) S.Pop(S.Stack,p);
+                else p = NULL;
+                continue;
+            }
             S.Push(S.Stack,p);
             S.Push(S.Stack,p->rchild);
+            last = p;
             p = p->lchild;
         }
         else
         {
+            last = p;
             S.Pop(S.Stack,p);
-            if(p != NULL) 
-            {
-               Visit(p->data);
-
-            }
         }
     }while(p != NULL || !S.StackEmpty(S.Stack));
     return OK;
 }
-
+//AB^EF^^G^^C^^
+TStatus LevelOrderTraverse(BiTree T,TStatus (*Visit)(TElemType e))//层次遍历二叉树
+{
+    Q.InitQueue(&Q.Queue);
+    BiTree p = NULL;
+    Q.QueuePush(&Q.Queue,T);
+    while(!Q.QueueEmpty(Q.Queue))
+    {
+        Q.QueuePop(&Q.Queue,p); 
+        if(p != NULL)
+        {
+            Visit(p->data);
+            Q.QueuePush(&Q.Queue,p->lchild);
+            Q.QueuePush(&Q.Queue,p->rchild);
+        }
+    }
+    return OK;
+}
 
 int main()
 {
