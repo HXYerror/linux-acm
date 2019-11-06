@@ -15,7 +15,7 @@ const ll INF64 = 1e18;
 
 ll T,N,M,K;
 /* --------------------------------------------------------------------------------------------------*/
-int value[MAX][4];
+int value[4][MAX];
 ll dp[MAX][4][4];
 vector<int> g[MAX];
 /* --------------------------------------------------------------------------------------------------*/
@@ -31,9 +31,9 @@ int main()
     cin >> N;
     for(int i = 0;i < 3;i++)
     {
-        for(int j = 0;j < N;j++)
+        for(int j = 1;j <= N;j++)
         {
-            cin >> value[j][i];
+            cin >> value[i][j];
         }
     }
     int x,y;
@@ -54,59 +54,22 @@ int main()
         }
         if(g[i].size() == 1) start = i;
     }
-    for(int i = 0;i < 3;i++)
+    if(!flag) 
     {
-        for(int j = 0;j < 3;j++)
-        {
-            if(i == j) continue;
-            dp[start][i][j] = value[start][j];
-        }
+        cout << "-1" << endl;
+        return 0;
     }
+    for(int i =0;i < N;i++)
+    {
 
-    int temp = start;
-    start = g[start][1];
-    int last = temp;
-    
-    while(1)
-    {
-        for(int i = 0;i < 3;i++)
-        {
-            for(int j = 0;j < 3;j++)
-            {
-                if(i == j) continue;
-                int k;
-                if(j == 0)
-                {
-                    k = i == 1 ? 2 : 1;
-                    dp[start][j][k] = min(dp[last][i][j],dp[last][j][i]) + value[start][k];
-                }
-                else if(j == 1)
-                {
-                    k = i == 0 ? 2 : 0;
-                    dp[start][j][k] = min(dp[last][i][j],dp[last][j][i]) + value[start][k];
-                }
-                else if(j == 2)
-                {
-                    k = i == 0 ? 1 : 0;
-                    dp[start][j][k] = min(dp[last][i][j],dp[last][j][i]) + value[start][k];
-                }
-            }
-        }
-        int temp = start;
-        if(g[start].size() == 1) break;
-        start = g[start][0] == last ? g[start][1] : g[start][0];
-        last = temp;
-    }
-    ll minans = INF64;
-    for(int i = 0;i < 3;i++)
-    {
-        for(int j = 0;j < 3;j++)
-        {
-            if(i == j) break;
-            minans = min(dp[start][i][j],minans);
-        }
     }
     cout << minans << "\n";
+    for(int i = N-1;i >= 0;i--)
+    {
+        cout << ans[i]+1;
+        if(i != 0) cout << " ";
+        else cout << "\n";
+    }
     return 0;
 }
 
