@@ -1,7 +1,12 @@
 *
+!Makefile
+!/
 !*/
+!*/*/
+!*/*/*/
 !*.c
 !*.cpp
-!Makefile
-!.gitignore
+!*/*.cpp
+!*/*/*.cpp
+!*/*/*/*.cpp
 
