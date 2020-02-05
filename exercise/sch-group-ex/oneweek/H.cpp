@@ -1,9 +1,10 @@
 /*************************************************************************
-	> File Name: hdu5952.cpp
+	> File Name: H.cpp
 	> Author: HXYerror
 	> Mail: zx841985525@163.com 
-	> Created Time: 2019年11月20日 星期三 21时24分13秒
+	> Created Time: 2020年02月04日 星期二 10时08分02秒
  ************************************************************************/
+
 #include <bits/stdc++.h>
 #define ll  long long
 using namespace std;
@@ -84,5 +85,4 @@ int main()
     }
     return 0;
 }
-
 
